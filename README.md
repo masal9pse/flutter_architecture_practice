@@ -1,16 +1,12 @@
-# flutter_architecture_practice
+## 本リポジトリの目的
+SSOTに従った状態管理で、データに不整合が発生しないよう実装した。
+小規模~中規模の新規プロジェクトで自分が基盤実装を担当する場合、こういったイメージで実装を行う。
 
-A new Flutter project.
+## 挙動
+- 記事一覧と詳細画面がある。
+- 記事一覧から記事詳細画面に遷移して、いいねボタンをタップ。
+- 一覧画面に戻る。
+- 詳細で押したいいねが反映されている。
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+##  参考記事
+https://medium.com/flutter-jp/architecture-240d3c56b597
