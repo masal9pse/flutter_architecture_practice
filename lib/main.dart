@@ -16,40 +16,94 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: .fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const TweetsScreen(),
+      home: const ArticleListView(),
     );
   }
 }
 
-class TweetsScreen extends ConsumerWidget {
-  const TweetsScreen({super.key});
-
+// 一覧画面
+class ArticleListView extends ConsumerWidget {
+  const ArticleListView({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final tweets = ref.watch(tweetsProvider);
+    final articles = ref.watch(articlesProvider);
     return Scaffold(
-      body: Center(child: Text(tweets.map((tweet) => tweet.text).join('\n'))),
+      appBar: AppBar(title: const Text('Articles')),
+      body: ListView(
+        children: [
+          for (final article in articles) TextButton(
+            child: Text('$article'),
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => ArticleDetailView(id: article.id)));
+            },
+          ),
+        ],
+      ),
     );
   }
 }
 
-final tweetsProvider = NotifierProvider<TweetsNotifier, List<Tweet>>(
-  TweetsNotifier.new,
-);
+// 詳細画面
+class ArticleDetailView extends ConsumerWidget {
+  const ArticleDetailView({
+    super.key,
+    required this.id,
+  });
 
-class TweetsNotifier extends Notifier<List<Tweet>> {
+  final String id;
   @override
-  List<Tweet> build() {
-    return [
-      Tweet(text: 'Hello, world1!'),
-      Tweet(text: 'Hello, world2!'),
-      Tweet(text: 'Hello, world3!'),
-    ];
+  Widget build(BuildContext context, WidgetRef ref) {
+    final article = ref.watch(
+      articlesProvider.select(
+        (articles) => articles.firstWhere((article) => article.id == id),
+      ),
+    );
+    return Scaffold(
+      appBar: AppBar(),
+      body: Center(
+        child: TextButton(
+          child: Text('$article'),
+          onPressed: () {
+            ref.read(articlesProvider.notifier).like(id);
+          },
+        ),
+      ),
+    );
   }
 }
 
-class Tweet {
-  final String text;
 
-  Tweet({required this.text});
+final articlesProvider = NotifierProvider<ArticlesNotifier, List<Article>>(
+  ArticlesNotifier.new,
+);
+
+// SSOTを満たした、記事データソース
+class ArticlesNotifier extends Notifier<List<Article>> {
+  @override
+  List<Article> build() {
+    return [
+      Article(id: '1'),
+      Article(id: '2'),
+      Article(id: '3'),
+      Article(id: '4'),
+      Article(id: '5'),
+    ];
+  }
+
+  void like(String id) {
+    final index = state.indexWhere((article) => article.id == id);
+    final article = state[index];
+    state = List.of(state)
+      ..[index] = Article(
+        id: article.id,
+        isLiked: true,
+      );
+  }
+}
+
+class Article  {
+  final String id;
+  final bool isLiked;
+
+  Article({required this.id, this.isLiked = false});
 }
